@@ -1,7 +1,7 @@
 package kvraft
 
-import "../porcupine"
-import "../models"
+import "src/porcupine"
+import "src/models"
 import "testing"
 import "strconv"
 import "time"
@@ -674,6 +674,7 @@ func TestSnapshotRPC3B(t *testing.T) {
 // are the snapshots not too huge? 500 bytes is a generous bound for the
 // operations we're doing here.
 func TestSnapshotSize3B(t *testing.T) {
+
 	const nservers = 3
 	maxraftstate := 1000
 	maxsnapshotstate := 500
@@ -689,8 +690,9 @@ func TestSnapshotSize3B(t *testing.T) {
 		check(cfg, t, ck, "x", "0")
 		Put(cfg, ck, "x", "1")
 		check(cfg, t, ck, "x", "1")
+		DPrintf("执行第%d轮",i)
 	}
-
+	DPrintf("开始检测快照")
 	// check that servers have thrown away most of their log entries
 	sz := cfg.LogSize()
 	if sz > 8*maxraftstate {

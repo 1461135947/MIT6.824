@@ -1,7 +1,7 @@
 package shardkv
 
-import "../porcupine"
-import "../models"
+import "src/porcupine"
+import "src/models"
 import "testing"
 import "strconv"
 import "time"
@@ -46,7 +46,7 @@ func TestStaticShards(t *testing.T) {
 		check(t, ck, ka[i], va[i])
 	}
 
-	// make sure that the data really is sharded by
+	// make sure that the Data really is sharded by
 	// shutting down one shard and checking that some
 	// Get()s don't succeed.
 	cfg.ShutdownGroup(1)
@@ -202,6 +202,7 @@ func TestSnapshot(t *testing.T) {
 	cfg.StartGroup(2)
 
 	for i := 0; i < n; i++ {
+
 		check(t, ck, ka[i], va[i])
 	}
 
@@ -277,6 +278,7 @@ func TestMissChange(t *testing.T) {
 	cfg.leave(2)
 
 	for i := 0; i < n; i++ {
+		DPrintf("第一次 check %v n:%v",i,n)
 		check(t, ck, ka[i], va[i])
 		x := randstring(20)
 		ck.Append(ka[i], x)
@@ -288,6 +290,7 @@ func TestMissChange(t *testing.T) {
 	cfg.StartServer(2, 1)
 
 	for i := 0; i < n; i++ {
+		DPrintf("第二次 check %v n:%v",i,n)
 		check(t, ck, ka[i], va[i])
 	}
 
@@ -811,8 +814,8 @@ func TestChallenge1Concurrent(t *testing.T) {
 
 //
 // optional test to see whether servers can handle
-// shards that are not affected by a config change
-// while the config change is underway
+// shards that are not affected by a currentConfig change
+// while the currentConfig change is underway
 //
 func TestChallenge2Unaffected(t *testing.T) {
 	fmt.Printf("Test: unaffected shard access (challenge 2) ...\n")
@@ -845,8 +848,8 @@ func TestChallenge2Unaffected(t *testing.T) {
 		owned[s] = gid == cfg.groups[1].gid
 	}
 
-	// Wait for migration to new config to complete, and for clients to
-	// start using this updated config. Gets to any key k such that
+	// Wait for migration to new currentConfig to complete, and for clients to
+	// start using this updated currentConfig. Gets to any key k such that
 	// owned[shard(k)] == true should now be served by group 101.
 	<-time.After(1 * time.Second)
 	for i := 0; i < n; i++ {
@@ -863,7 +866,7 @@ func TestChallenge2Unaffected(t *testing.T) {
 	// 101 doesn't get a chance to migrate things previously owned by 100
 	cfg.leave(0)
 
-	// Wait to make sure clients see new config
+	// Wait to make sure clients see new currentConfig
 	<-time.After(1 * time.Second)
 
 	// And finally: check that gets/puts for 101-owned keys still complete
@@ -881,7 +884,7 @@ func TestChallenge2Unaffected(t *testing.T) {
 
 //
 // optional test to see whether servers can handle operations on shards that
-// have been received as a part of a config migration when the entire migration
+// have been received as a part of a currentConfig migration when the entire migration
 // has not yet completed.
 //
 func TestChallenge2Partial(t *testing.T) {

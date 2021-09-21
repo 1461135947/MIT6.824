@@ -30,11 +30,14 @@ type Config struct {
 
 const (
 	OK = "OK"
+	ErrNoAccepted="ErrNoAccepted"
 )
 
 type Err string
 
 type JoinArgs struct {
+	ClientId uint64
+	OpID uint64
 	Servers map[int][]string // new GID -> servers mappings
 }
 
@@ -44,6 +47,8 @@ type JoinReply struct {
 }
 
 type LeaveArgs struct {
+	ClientId uint64
+	OpID uint64
 	GIDs []int
 }
 
@@ -53,6 +58,8 @@ type LeaveReply struct {
 }
 
 type MoveArgs struct {
+	ClientId uint64
+	OpID uint64
 	Shard int
 	GID   int
 }
@@ -63,6 +70,8 @@ type MoveReply struct {
 }
 
 type QueryArgs struct {
+	ClientId uint64
+	OpID uint64
 	Num int // desired config number
 }
 

@@ -8,7 +8,9 @@ package raft
 // test with the original before submitting.
 //
 
-import "testing"
+import (
+	"testing"
+)
 import "fmt"
 import "time"
 import "math/rand"
@@ -145,37 +147,39 @@ func TestRPCBytes2B(t *testing.T) {
 }
 
 func TestFailAgree2B(t *testing.T) {
-	servers := 3
-	cfg := make_config(t, servers, false)
-	defer cfg.cleanup()
 
-	cfg.begin("Test (2B): agreement despite follower disconnection")
+		servers := 3
+		cfg := make_config(t, servers, false)
+		defer cfg.cleanup()
 
-	cfg.one(101, servers, false)
+		cfg.begin("Test (2B): agreement despite follower disconnection")
 
-	// disconnect one follower from the network.
-	leader := cfg.checkOneLeader()
-	cfg.disconnect((leader + 1) % servers)
+		cfg.one(101, servers, false)
 
-	// the leader and remaining follower should be
-	// able to agree despite the disconnected follower.
-	cfg.one(102, servers-1, false)
-	cfg.one(103, servers-1, false)
-	time.Sleep(RaftElectionTimeout)
-	cfg.one(104, servers-1, false)
-	cfg.one(105, servers-1, false)
+		// disconnect one follower from the network.
+		leader := cfg.checkOneLeader()
+		cfg.disconnect((leader + 1) % servers)
 
-	// re-connect
-	cfg.connect((leader + 1) % servers)
+		// the leader and remaining follower should be
+		// able to agree despite the disconnected follower.
+		cfg.one(102, servers-1, false)
+		cfg.one(103, servers-1, false)
+		time.Sleep(RaftElectionTimeout)
+		cfg.one(104, servers-1, false)
+		cfg.one(105, servers-1, false)
 
-	// the full set of servers should preserve
-	// previous agreements, and be able to agree
-	// on new commands.
-	cfg.one(106, servers, true)
-	time.Sleep(RaftElectionTimeout)
-	cfg.one(107, servers, true)
+		// re-connect
+		cfg.connect((leader + 1) % servers)
 
-	cfg.end()
+		// the full set of servers should preserve
+		// previous agreements, and be able to agree
+		// on new commands.
+		cfg.one(106, servers, true)
+		time.Sleep(RaftElectionTimeout)
+		cfg.one(107, servers, true)
+
+		cfg.end()
+
 }
 
 func TestFailNoAgree2B(t *testing.T) {

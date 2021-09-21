@@ -8,7 +8,7 @@ package raft
 // test with the original before submitting.
 //
 
-import "../labrpc"
+import "src/labrpc"
 import "log"
 import "sync"
 import "testing"
@@ -234,7 +234,7 @@ func (cfg *config) cleanup() {
 // attach server i to the net.
 func (cfg *config) connect(i int) {
 	// fmt.Printf("connect(%d)\n", i)
-
+	DPrintf("%d建立连接\n",i)
 	cfg.connected[i] = true
 
 	// outgoing ClientEnds
@@ -258,6 +258,7 @@ func (cfg *config) connect(i int) {
 func (cfg *config) disconnect(i int) {
 	// fmt.Printf("disconnect(%d)\n", i)
 
+	DPrintf("%d断开连接\n",i)
 	cfg.connected[i] = false
 
 	// outgoing ClientEnds
